@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Anagram Game</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="resources/style.css">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript">
+        var words = new Array();
+        var anagrams = new Array();
+        var currentWord;
+        var score = 0;
+
+        $(document).ready(function () {
+            function GetNewWord() {
+                anagrams = [];
+                $.post('scripts/getword.php', null, function (data) {
+                    var word = $(data).find("value").text();
+                    if (words.indexOf(word) == -1) {
+                        words.push(word);
+                        currentWord = word;
+                        $('#gameSpot').append("<tr><td>" + currentWord + "</td><td><ol id=" +
+                            currentWord + "></ol></td></tr>");
+                    } else {
+                        GetNewWord();
+                    }
+                });
+            }
+
+            function CheckAnagram(wordToBeChecked) {
+                var isAnagram = true;
+                var potentialScore = wordToBeChecked.length * 10;
+                wordToBeChecked = wordToBeChecked.toLowerCase();
+
+                // Check 1: Ensure that the word is an actual anagram
+                var temp = currentWord;
+                for (var i = 0; i < wordToBeChecked.length; i++) {
+                    var character = wordToBeChecked.charAt(i);
+                    if (temp.indexOf(character) != -1) {
+                        temp.charAt = "";
+                    } else {
+                        isAnagram = false;
+                    }
+                }
+
+                if (wordToBeChecked == currentWord) {
+                    isAnagram = false;
+                }
+
+                if (isAnagram == true) {
+
+                    // Check 2: Check to make sure the word hasn't already been used
+                    if (anagrams.indexOf(wordToBeChecked) == -1) {
+
+                        // Check 3: Check to make sure the word is in the dictionary
+                        $.post('scripts/checkword.php', {
+                            word: wordToBeChecked
+                        }, function (data) {
+                            var check = $(data).find("Result").text();
+                            if (check == "True") {
+                                anagrams.push(wordToBeChecked);
+                                $("#" + currentWord).append("<li>" + wordToBeChecked + " (" +
+                                    potentialScore + " points)</li>")
+                                UpdateScore(potentialScore);
+                            } else {
+                                alert(wordToBeChecked + " is not a word. Try again!");
+                                UpdateScore(-10);
+                            }
+                        });
+
+                    } else {
+                        alert(wordToBeChecked + " was already guessed! Try again!");
+                        UpdateScore(-10);
+                    }
+
+                } else {
+                    alert(wordToBeChecked + " is not an anagram of " + currentWord + ". Try again!");
+                    UpdateScore(-10);
+                }
+
+            }
+
+            function UpdateScore(amount) {
+                score += amount;
+                var text = "Score: " + score;
+                $('#score').text(text);
+            }
+
+            $("#next").click(function () {
+                GetNewWord();
+            });
+
+            $("#done").click(function () {
+                var name = prompt("Please enter your name.", "Mike");
+                $.post('scripts/addhighscore.php', {
+                    name: name,
+                    score: score
+                });
+                window.location = "HighScores.html";
+            });
+
+            $('#input').keypress(function (event) {
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode == '13') {
+                    var word = $('#input').val();
+                    word = $.trim(word);
+                    CheckAnagram(word);
+                    $('#input').val('');
+                    return false;
+                }
+
+            });
+
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <br>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center">Anagram Finder</h1>
+                <h3 class="text-center" id="score">Score: 0</h3>
+                <br>
+            </div>
+
+            <div class="col-lg-6 col-lg-offset-3 text-center">
+                <div class="row">
+                    <table class="table" id="anagram">
+                        <thead>
+                            <tr>
+                                <td>Word</td>
+                                <td>Anagrams</td>
+                            </tr>
+                        </thead>
+                        <tbody id="gameSpot">
+                        </tbody>
+                    </table>
+                    <button class="btn btn-default" id="next">Try Another Word</button>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="input-group">
+                        <span class="input-group-addon">Your Guess:</span>
+                        <input type="text" id="input" class="form-control" placeholder="Enter an anagram">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <button class="btn btn-default" id="done">End Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

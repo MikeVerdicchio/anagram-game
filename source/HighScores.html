@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Anagram Game</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="resources/style.css">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.post('scripts/loadhighscore.php', function (data) {
+                $('#scores').append(data);
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <br>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center">Anagram Finder High Scores</h1>
+                <br>
+            </div>
+
+            <div class="col-lg-6 col-lg-offset-3 text-center">
+                <div class="row">
+                    <table class="table" id="highscores">
+                        <thead>
+                            <tr>
+                                <td>Name</td>
+                                <td>Score</td>
+                            </tr>
+                        </thead>
+                        <tbody id="scores">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+h1 {
+    color: blue;
+    font-size: 54px;
+}
+
+h3 {
+    color: orange;
+    font-size: 36px;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    background-color: #F5F5F0;
+    color: orange;
+}
+
+table {
+    width: 100%;
+}
+
+thead {
+    color: orange;
+    font-weight: bold;
+}
+
+tbody {
+    color: black;
+    font-style: italic;
+}
+
+table,
+th,
+td {
+    border: 2px solid blue;
+}
