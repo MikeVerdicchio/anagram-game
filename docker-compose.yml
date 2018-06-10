@@ -1,9 +1,9 @@
 version: '2'
 
 services:
-  db:
+  anagram-db:
     image: mysql:5.7
-    container_name: db
+    container_name: anagram-db
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=anagram
@@ -12,11 +12,11 @@ services:
       - MYSQL_PASSWORD=anagram
     ports:
       - "3306:3306"
-  web:
+  anagram-app:
     build: .
-    container_name: web
+    container_name: anagram-app
     depends_on:
-      - db
+      - anagram-db
     volumes:
       - .:/var/www/html
     ports:
